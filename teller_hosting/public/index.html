@@ -1,0 +1,67 @@
+<html>
+
+<head>
+  <style>
+    #teller-connect-window {
+      transform: scale(2);
+      -webkit-transform: scale(2);
+    }
+  </style>
+</head>
+
+<body>
+  <script src="https://cdn.teller.io/connect/connect.js"></script>
+  <script>
+    var isFlutterInAppWebViewReady = false;
+    window.addEventListener("flutterInAppWebViewPlatformReady", function (event) {
+      isFlutterInAppWebViewReady = true;
+      console.log('flutterInAppWebViewPlatformReady')
+      openConnect()
+    });
+
+    function openConnect() {
+      var tellerConnect = TellerConnect.setup({
+        // TODO: Replace with your Teller API key
+        applicationId: 'app_',
+        selectAccount: 'multiple',
+        environment: 'sandbox',
+        onInit: function () {
+          console.log("Teller Connect has initialized")
+          if (isFlutterInAppWebViewReady) {
+            window.flutter_inappwebview.callHandler('onInit');
+          } else {
+            console.log('isFlutterInAppWebViewReady - false')
+          }
+          tellerConnect.open()
+        },
+        onSuccess: function (enrollment) {
+          console.log("User enrolled successfully", enrollment.accessToken)
+          if (isFlutterInAppWebViewReady) {
+            window.flutter_inappwebview.callHandler('onSuccess', enrollment);
+          } else {
+            console.log('isFlutterInAppWebViewReady - false')
+          }
+        },
+        onExit: function () {
+          console.log("User closed Teller Connect")
+          if (isFlutterInAppWebViewReady) {
+            window.flutter_inappwebview.callHandler('onExit');
+          } else {
+            console.log('isFlutterInAppWebViewReady - false')
+          }
+        },
+        onFailure: function (e) {
+          console.log("onFailure", e)
+          if (isFlutterInAppWebViewReady) {
+            window.flutter_inappwebview.callHandler('onFailure', e);
+          } else {
+            console.log('isFlutterInAppWebViewReady - false')
+          }
+        }
+      })
+    }
+
+  </script>
+</body>
+
+</html>
